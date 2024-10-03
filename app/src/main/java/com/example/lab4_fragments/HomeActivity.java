@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -35,23 +36,36 @@ public class HomeActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
+        fragmentManager = getSupportFragmentManager();
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setSelectedItemId(R.id.menu_home);
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 if(item.getItemId()==R.id.menu_home){
+                    homeFragment = HomeFragment.newInstance("","");
+                    loadFragment(homeFragment);
                     return true;
                 }
                 else if(item.getItemId()==R.id.menu_edificaciones){
+                    edificacionesFragment = EdificacionesFragment.newInstance("","");
+                    loadFragment(edificacionesFragment);
                     return true;
                 }
                 else if(item.getItemId()==R.id.menu_mapa){
+                    mapaFragment = MapaFragment.newInstance("","");
+                    loadFragment(mapaFragment);
                     return true;
                 }
                 else return false;
             }
         });
+    }
+    private void loadFragment(Fragment fragment){
+        if(fragmentManager!=null){
+            fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.fragmentContainerView,fragment);
+            fragmentTransaction.commit();
+        }
     }
 }
