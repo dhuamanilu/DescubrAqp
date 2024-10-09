@@ -9,18 +9,11 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import com.example.lab4_fragments.fragments.LoginFragment;
-import com.example.lab4_fragments.fragments.Register1Fragment;
-import com.example.lab4_fragments.fragments.Register2Fragment;
 import com.example.lab4_fragments.fragments.StartFragment;
 
 public class LoginActivity extends AppCompatActivity {
 
     private FragmentManager fragmentManager;
-    private StartFragment startFragment;
-    private Register1Fragment register1Fragment;
-    private Register2Fragment register2Fragment;
-    private LoginFragment loginFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +29,6 @@ public class LoginActivity extends AppCompatActivity {
 
         fragmentManager = getSupportFragmentManager();
 
-        // Cargar el fragmento de inicio inicialmente
         if (savedInstanceState == null) {
             loadFragment(new StartFragment());
         }
@@ -45,7 +37,7 @@ public class LoginActivity extends AppCompatActivity {
     private void loadFragment(Fragment fragment) {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragmentContainerView, fragment);
-        fragmentTransaction.addToBackStack(null);  // Agrega el fragmento a la pila de retroceso
+        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
 }

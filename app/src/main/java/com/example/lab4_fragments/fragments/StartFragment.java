@@ -11,16 +11,13 @@ import com.example.lab4_fragments.R;
 public class StartFragment extends Fragment {
 
     public StartFragment() {
-        // Constructor vacío requerido
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflar el layout para este fragmento
         View rootView = inflater.inflate(R.layout.fragment_start, container, false);
 
-        // Configurar botones
         rootView.findViewById(R.id.btnLogin).setOnClickListener(v -> goToLogin());
         rootView.findViewById(R.id.btnRegister1).setOnClickListener(v -> goToRegister1());
 

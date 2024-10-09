@@ -1,26 +1,41 @@
 package com.example.lab4_fragments.fragments;
 
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import com.example.lab4_fragments.R;
+import com.example.lab4_fragments.view_models.SharedViewModel;
 
 public class Register1Fragment extends Fragment {
 
-    public Register1Fragment() {
-        // Constructor vacío requerido
-    }
+    private SharedViewModel sharedViewModel;
+    private EditText firstNameEditText, lastNameEditText, dniEditText, phoneEditText;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflar el layout para este fragmento
         View rootView = inflater.inflate(R.layout.fragment_register1, container, false);
 
-        // Configurar los botones para navegar
-        rootView.findViewById(R.id.btnNext).setOnClickListener(v -> goToRegister2());
+        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+
+        firstNameEditText = rootView.findViewById(R.id.firstNameEditText);
+        lastNameEditText = rootView.findViewById(R.id.lastNameEditText);
+        dniEditText = rootView.findViewById(R.id.dniEditText);
+        phoneEditText = rootView.findViewById(R.id.phoneEditText);
+
+        rootView.findViewById(R.id.btnNext).setOnClickListener(v -> {
+            sharedViewModel.setFirstName(firstNameEditText.getText().toString());
+            sharedViewModel.setLastName(lastNameEditText.getText().toString());
+            sharedViewModel.setDni(dniEditText.getText().toString());
+            sharedViewModel.setPhone(phoneEditText.getText().toString());
+
+            goToRegister2();
+        });
+
         rootView.findViewById(R.id.btnBack).setOnClickListener(v -> goBackToStart());
 
         return rootView;
