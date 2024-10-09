@@ -1,0 +1,65 @@
+[33mcommit 0254ebfe0a0f1330d74670bf909023bef24db8b4[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: Diego Alonso Huamani Luque <dhuamanilu@unsa.edu.pe>
+Date:   Wed Oct 9 14:33:45 2024 -0500
+
+    Se agrego la logica para que al darle a una edificiacion en la lista se abra su detalle
+
+[33mcommit 5390ab5642ea927f9e7da7bb973a31cf3b48b1af[m
+Author: Diego Alonso Huamani Luque <dhuamanilu@unsa.edu.pe>
+Date:   Wed Oct 9 11:05:22 2024 -0500
+
+    Se creo la clase comment para modelar un comentario ,este contiene al usuario ,el nombre y el comentario
+
+[33mcommit 9a6d2abcb06b9887bd8ef1ec53a124d9d7c96d7e[m
+Author: Diego Alonso Huamani Luque <dhuamanilu@unsa.edu.pe>
+Date:   Wed Oct 9 10:44:05 2024 -0500
+
+    Se anadio imagenes de muestra para mostrarlos en el fragment de edificacines , se creo un building adapter para vincular los datos a la vista de cada elemento en elrecicler view
+
+[33mcommit da7d9246ebcfb9d23bbef84f327471e1c35a8182[m
+Author: Diego Alonso Huamani Luque <dhuamanilu@unsa.edu.pe>
+Date:   Wed Oct 9 09:33:28 2024 -0500
+
+    Se creo la clase Building para modelar una edificacino ,ademas se anadio la logica incial del fragment
+
+[33mcommit f2347dac0ff56a996d6397c12302f9629c8559da[m
+Author: Diego Alonso Huamani Luque <dhuamanilu@unsa.edu.pe>
+Date:   Thu Oct 3 19:04:47 2024 -0500
+
+    se agrego colores al background de los fragments
+
+[33mcommit 31f2b77b67464dba6a06920121f0af9db8c49452[m
+Author: Diego Alonso Huamani Luque <dhuamanilu@unsa.edu.pe>
+Date:   Thu Oct 3 18:59:20 2024 -0500
+
+    se agrego funcionalidad al botron de navegacion
+
+[33mcommit 59eb964c98b804875ebaf4e59bb020e20024a1f7[m
+Author: Diego Alonso Huamani Luque <dhuamanilu@unsa.edu.pe>
+Date:   Thu Oct 3 18:54:58 2024 -0500
+
+    se anadio referencias a cada uno de los fragment en home activity
+
+[33mcommit 56619fb79f09c6b9bcf3fd82219c109538071e90[m
+Author: Diego Alonso Huamani Luque <dhuamanilu@unsa.edu.pe>
+Date:   Thu Oct 3 18:44:20 2024 -0500
+
+    Se agregaron los iconos a el menu navigation
+
+[33mcommit ee8be485882d35af4cfef4c5dceec4364523f48b[m
+Author: Diego Alonso Huamani Luque <dhuamanilu@unsa.edu.pe>
+Date:   Thu Oct 3 18:34:22 2024 -0500
+
+    se creo el diseno del menu navigation
+
+[33mcommit 8ac6692122f0e907d69e5b204c7732897c58c3ef[m
+Author: Diego Alonso Huamani Luque <dhuamanilu@unsa.edu.pe>
+Date:   Thu Oct 3 18:29:12 2024 -0500
+
+    Se diseno el main activity con un bottomNavigationView y un fragmentContainerView
+
+[33mcommit 83f261ca00a85aa44ae55f7463b070c8c7b75ec0[m
+Author: Diego Alonso Huamani Luque <dhuamanilu@unsa.edu.pe>
+Date:   Thu Oct 3 18:23:08 2024 -0500
+
+    Se creo el proyecto y se creo un fragment
