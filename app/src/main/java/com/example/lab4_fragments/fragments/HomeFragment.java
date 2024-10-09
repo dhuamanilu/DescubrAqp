@@ -48,5 +48,16 @@ public class HomeFragment extends Fragment {
         mapImage.setOnClickListener(v -> navigateToEdificacionesFragment());
     }
 
+    private void toggleImage() {
+        if (isShowingMap) {
+            mapImage.setImageResource(R.drawable.ubicacion);
+            viewUbiButton.setText("Ver mapa");
+        } else {
+            mapImage.setImageResource(R.drawable.mapimage);
+            viewUbiButton.setText("Ver mi ubicación");
+        }
+        isShowingMap = !isShowingMap;
+    }
+
     
 }
