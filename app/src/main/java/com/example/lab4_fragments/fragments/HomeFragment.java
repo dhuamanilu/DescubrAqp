@@ -45,7 +45,7 @@ public class HomeFragment extends Fragment {
 
         viewUbiButton.setOnClickListener(v -> toggleImage());
 
-        mapImage.setOnClickListener(v -> navigateToEdificacionesFragment());
+        mapImage.setOnClickListener(v -> navigateToDetailFragment());
     }
 
     private void toggleImage() {
@@ -59,5 +59,10 @@ public class HomeFragment extends Fragment {
         isShowingMap = !isShowingMap;
     }
 
-    
+    private void navigateToDetailFragment() {
+        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragmentContainerView, new DetailFragment());
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
 }
