@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#FFCCDD">
+
+    <TextView
+        android:id="@+id/title_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Monasterio de Santa Catalina"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="#C00000" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ingresar a la vista en 360"
+        android:textColor="#C00000"
+        android:textStyle="italic" />
+
+    <SeekBar
+        android:id="@+id/seek_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <ImageView
+        android:id="@+id/image_view"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/your_image" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Este complejo turístico fue fundado en 1579, fue construido como una pequeña ciudad, fue ampliada en el siglo XVII. El convento ocupa un área aproximada de veinte mil metros cuadrados."
+        android:layout_marginTop="8dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Comentarios"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp" />
+
+    <TextView
+        android:id="@+id/comment_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Diego Almazán: Más que un monasterio es una ciudad dentro de la propia ciudad"
+        android:layout_marginTop="4dp" />
+
+    <TextView
+        android:id="@+id/comment_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Louis Toh: Hay mucho que ver, aunque algunas cosas pueden resultar un poco repetitivas después de un tiempo."
+        android:layout_marginTop="4dp" />
+
+    <EditText
+        android:id="@+id/comment_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Inserta tu comentario aquí"
+        android:layout_marginTop="16dp" />
+
+    <Button
+        android:id="@+id/submit_comment_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Comentar"
+        android:layout_marginTop="8dp" />
+</LinearLayout>
