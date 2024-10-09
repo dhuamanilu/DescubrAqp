@@ -6,9 +6,12 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,7 +63,26 @@ public class EdificacionesFragment extends Fragment {
         buildingList.add(new Building("Molino de Sabandía", "Una construcción colonial donde se molían trigo y maíz", R.drawable.molino));
 
         // Configura el adaptador
-        buildingAdapter = new BuildingAdapter(buildingList);
+        buildingAdapter = new BuildingAdapter(buildingList ,  new BuildingAdapter.OnBuildingClickListener() {
+            @Override
+            public void onBuildingClick(int position) {
+                Log.d("EdificacionesFragmentINNER", "Edificación seleccionada en la posición: " + position);
+                Log.v("EdificacionesFragmentINNER", "SE LLAMO AL METODO DE ABAJO: " + position);
+
+                Building selectedBuilding = buildingList.get(position);
+
+                int buildingId = position;
+                Log.d("EdificacionesFragmentINNER", "SE COGIO EL ID  DE LA EDIFICACION " + position);
+
+                DetailFragment detailFragment = DetailFragment.newInstance(buildingId);
+                FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.fragmentContainerView, detailFragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+            }
+        });
         recyclerView.setAdapter(buildingAdapter);
 
         return view;
@@ -76,4 +98,7 @@ public class EdificacionesFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
+
+
+
 }

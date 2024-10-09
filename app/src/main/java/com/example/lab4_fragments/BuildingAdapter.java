@@ -1,5 +1,6 @@
 package com.example.lab4_fragments;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,9 +15,14 @@ import java.util.List;
 public class BuildingAdapter extends RecyclerView.Adapter<BuildingAdapter.BuildingViewHolder> {
 
     private List<Building> buildingList;
+    private OnBuildingClickListener onBuildingClickListener;
 
-    public BuildingAdapter(List<Building> buildingList) {
+    public interface OnBuildingClickListener {
+        void onBuildingClick(int position);
+    }
+    public BuildingAdapter(List<Building> buildingList, OnBuildingClickListener onBuildingClickListener) {
         this.buildingList = buildingList;
+        this.onBuildingClickListener = onBuildingClickListener;
     }
 
     @NonNull
@@ -32,6 +38,14 @@ public class BuildingAdapter extends RecyclerView.Adapter<BuildingAdapter.Buildi
         holder.title.setText(building.getTitle());
         holder.description.setText(building.getDescription());
         holder.image.setImageResource(building.getImageResId());
+
+        // Manejar el clic en el elemento
+        holder.itemView.setOnClickListener(v -> {
+            if (onBuildingClickListener != null) {
+                Log.d("BuildingAdapter", "Edificación clickeada: " + building.getTitle());
+                onBuildingClickListener.onBuildingClick(position);
+            }
+        });
     }
 
     @Override

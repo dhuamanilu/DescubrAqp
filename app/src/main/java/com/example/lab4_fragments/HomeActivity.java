@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.lab4_fragments.fragments.DetailFragment;
 import com.example.lab4_fragments.fragments.EdificacionesFragment;
 import com.example.lab4_fragments.fragments.HomeFragment;
 import com.example.lab4_fragments.fragments.MapaFragment;
@@ -53,8 +54,8 @@ public class HomeActivity extends AppCompatActivity {
                     return true;
                 }
                 else if(item.getItemId()==R.id.menu_mapa){
-                    mapaFragment = MapaFragment.newInstance("","");
-                    loadFragment(mapaFragment);
+                    DetailFragment detailFragment = DetailFragment.newInstance(0);  // Puedes ajustar el parámetro según necesites
+                    loadFragment(detailFragment);
                     return true;
                 }
                 else return false;
