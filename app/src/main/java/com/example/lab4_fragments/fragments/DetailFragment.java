@@ -57,6 +57,16 @@ public class DetailFragment extends Fragment {
         loadBuildingData(buildingId, imageView, titleTextView, descriptionTextView);
         commentList.add(new Comment("Diego Almazán", "Más que un monasterio es una ciudad dentro de la propia ciudad", 5));
         commentList.add(new Comment("Louis Toh", "Hay mucho que ver, aunque algunas cosas pueden resultar un poco repetitivas después de un tiempo.", 4));
+        btnView360.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Vista360Fragment vista360Fragment = new Vista360Fragment();
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragmentContainerView, vista360Fragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
         return view;
     }
 
@@ -81,4 +91,6 @@ public class DetailFragment extends Fragment {
             buildingId = getArguments().getInt(ARG_BUILDING_ID);
         }
     }
+
+
 }
