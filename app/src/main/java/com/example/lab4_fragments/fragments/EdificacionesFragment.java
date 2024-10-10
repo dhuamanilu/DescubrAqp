@@ -49,20 +49,20 @@ public class EdificacionesFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // Asegúrate de que estés inflando el XML correcto
+
         View view = inflater.inflate(R.layout.fragment_edificaciones, container, false);
 
-        // Inicializa RecyclerView
+
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Inicializa lista de edificaciones (ejemplo)
+
         buildingList = new ArrayList<>();
         buildingList.add(new Building("Catedral", "Santuario principal de la ciudad ocupando el lado norte de la Plaza de Armas", R.drawable.catedral));
         buildingList.add(new Building("Monasterio de Santa Catalina", "Una pequeña ciudadela que ocupa un área de 20 mil metros cuadrados", R.drawable.monasterio));
         buildingList.add(new Building("Molino de Sabandía", "Una construcción colonial donde se molían trigo y maíz", R.drawable.molino));
 
-        // Configura el adaptador
+
         buildingAdapter = new BuildingAdapter(buildingList ,  new BuildingAdapter.OnBuildingClickListener() {
             @Override
             public void onBuildingClick(int position) {

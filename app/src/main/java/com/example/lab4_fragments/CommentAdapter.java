@@ -27,7 +27,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         Comment comment = commentList.get(position);
         holder.usernameTextView.setText(comment.getUsername());
         holder.textTextView.setText(comment.getText());
-        // Aquí puedes agregar la lógica para mostrar la calificación si es necesario
+
     }
 
     @Override

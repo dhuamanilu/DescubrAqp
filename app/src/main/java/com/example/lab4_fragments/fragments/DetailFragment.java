@@ -29,7 +29,7 @@ public class DetailFragment extends Fragment {
     private RecyclerView commentsRecyclerView;
     private CommentAdapter commentAdapter;
     private List<Comment> commentList;
-
+    private Button btnView360;
     public static DetailFragment newInstance(int buildingId) {
         DetailFragment fragment = new DetailFragment();
         Bundle args = new Bundle();
@@ -43,31 +43,24 @@ public class DetailFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
 
-        // Inicializa los elementos de la vista
         ImageView imageView = view.findViewById(R.id.image_view);
         TextView titleTextView = view.findViewById(R.id.title_text_view);
         TextView descriptionTextView = view.findViewById(R.id.description_text_view);
-
-
-        // Inicializa el RecyclerView
+        btnView360 = view.findViewById(R.id.btn_view_360);
         commentsRecyclerView = view.findViewById(R.id.comments_recycler_view);
         commentsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        // Inicializa la lista de comentarios
         commentList = new ArrayList<>();
         commentAdapter = new CommentAdapter(commentList);
         commentsRecyclerView.setAdapter(commentAdapter);
 
-        // Cargar datos del edificio según el ID
+
         loadBuildingData(buildingId, imageView, titleTextView, descriptionTextView);
-
-
-
+        commentList.add(new Comment("Diego Almazán", "Más que un monasterio es una ciudad dentro de la propia ciudad", 5));
+        commentList.add(new Comment("Louis Toh", "Hay mucho que ver, aunque algunas cosas pueden resultar un poco repetitivas después de un tiempo.", 4));
         return view;
     }
 
     private void loadBuildingData(int buildingId, ImageView imageView, TextView titleTextView, TextView descriptionTextView) {
-
         // Ejemplo de datos estáticos
         if (buildingId == 0) {
             titleTextView.setText("Catedral");

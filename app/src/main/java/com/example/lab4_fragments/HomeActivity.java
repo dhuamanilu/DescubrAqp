@@ -53,11 +53,6 @@ public class HomeActivity extends AppCompatActivity {
                     loadFragment(edificacionesFragment);
                     return true;
                 }
-                else if(item.getItemId()==R.id.menu_mapa){
-                    DetailFragment detailFragment = DetailFragment.newInstance(0);  // Puedes ajustar el parámetro según necesites
-                    loadFragment(detailFragment);
-                    return true;
-                }
                 else return false;
             }
         });

@@ -18,7 +18,11 @@
         android:layout_height="200dp"
         android:scaleType="centerCrop"
         android:layout_marginTop="8dp"/>
-
+    <Button
+        android:id="@+id/btn_view_360"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ingresar a la vista en 360" />
     <TextView
         android:id="@+id/description_text_view"
         android:layout_width="wrap_content"
