@@ -1,4 +1,4 @@
-package com.example.lab4_fragments;
+package com.example.lab4_fragments.views;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -6,6 +6,9 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
+
+import com.example.lab4_fragments.Door;
+import com.example.lab4_fragments.Room;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,7 +19,7 @@ import java.util.List;
 
 public class MansionView extends View {
 
-    private Paint paintRoom;
+    private Paint paintRoomOutline;
     private Paint paintDoor;
     private Paint paintText;
 
@@ -42,9 +45,10 @@ public class MansionView extends View {
     }
 
     private void init() {
-        paintRoom = new Paint();
-        paintRoom.setColor(Color.LTGRAY);
-        paintRoom.setStyle(Paint.Style.FILL);
+        paintRoomOutline = new Paint();
+        paintRoomOutline.setColor(Color.DKGRAY);
+        paintRoomOutline.setStyle(Paint.Style.STROKE);
+        paintRoomOutline.setStrokeWidth(5);
 
         paintDoor = new Paint();
         paintDoor.setColor(Color.YELLOW);
@@ -52,22 +56,23 @@ public class MansionView extends View {
 
         paintText = new Paint();
         paintText.setColor(Color.BLACK);
-        paintText.setTextSize(40);
+        paintText.setTextSize(30);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-
+        // Dibujar los contornos de los cuartos
         for (Room room : rooms) {
-            canvas.drawRect(room.x1, room.y1, room.x2, room.y2, paintRoom);
-            canvas.drawText(room.name, (room.x1 + room.x2) / 2 - 40, (room.y1 + room.y2) / 2, paintText);
+            canvas.drawRect(room.getX1(), room.getY1(), room.getX2(), room.getY2(), paintRoomOutline);
+            // Posicionar el nombre del cuarto en el centro
+            canvas.drawText(room.getName(), (room.getX1() + room.getX2()) / 2 - 40, (room.getY1() + room.getY2()) / 2, paintText);
         }
 
-
+        // Dibujar las puertas como líneas amarillas
         for (Door door : doors) {
-            canvas.drawLine(door.x1, door.y1, door.x2, door.y2, paintDoor);
+            canvas.drawLine(door.getX1(), door.getY1(), door.getX2(), door.getY2(), paintDoor);
         }
     }
 
@@ -99,8 +104,5 @@ public class MansionView extends View {
             e.printStackTrace();
         }
     }
-
-
-
-
 }
+

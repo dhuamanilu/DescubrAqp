@@ -30,6 +30,8 @@ public class DetailFragment extends Fragment {
     private CommentAdapter commentAdapter;
     private List<Comment> commentList;
     private Button btnView360;
+
+    private Button btnViewMansion;
     public static DetailFragment newInstance(int buildingId) {
         DetailFragment fragment = new DetailFragment();
         Bundle args = new Bundle();
@@ -47,6 +49,7 @@ public class DetailFragment extends Fragment {
         TextView titleTextView = view.findViewById(R.id.title_text_view);
         TextView descriptionTextView = view.findViewById(R.id.description_text_view);
         btnView360 = view.findViewById(R.id.btn_view_360);
+        btnViewMansion = view.findViewById(R.id.btn_view_mansion);
         commentsRecyclerView = view.findViewById(R.id.comments_recycler_view);
         commentsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         commentList = new ArrayList<>();
@@ -63,6 +66,18 @@ public class DetailFragment extends Fragment {
                 Vista360Fragment vista360Fragment = new Vista360Fragment();
                 getActivity().getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragmentContainerView, vista360Fragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+
+
+        btnViewMansion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MansionFragment mansionFragment = new MansionFragment();
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragmentContainerView, mansionFragment)
                         .addToBackStack(null)
                         .commit();
             }
