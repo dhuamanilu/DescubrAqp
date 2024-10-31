@@ -92,10 +92,20 @@ public class DetailFragment extends Fragment {
             descriptionTextView.setText("Santuario principal de la ciudad ocupando el lado norte de la Plaza de Armas.");
             imageView.setImageResource(R.drawable.catedral);
         } else if (buildingId == 1) {
+            titleTextView.setText("Mansión del Fundador");
+            descriptionTextView.setText("La Mansión del Fundador es una histórica casona colonial de Arequipa, conocida por su arquitectura de sillar y su rica herencia cultural y artística.");
+            imageView.setImageResource(R.drawable.ingreso);
+        } else if (buildingId == 2) {
             titleTextView.setText("Monasterio de Santa Catalina");
             descriptionTextView.setText("Este complejo turístico fue fundado en 1579.");
             imageView.setImageResource(R.drawable.monasterio);
         }
+        else if (buildingId == 3) {
+            titleTextView.setText("Molino de Sabandia");
+            descriptionTextView.setText("Una construcción colonial donde se molían trigo y maíz.");
+            imageView.setImageResource(R.drawable.molino);
+        }
+
     }
 
 
