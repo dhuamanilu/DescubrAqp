@@ -20,6 +20,10 @@ import com.example.lab4_fragments.Building;
 import com.example.lab4_fragments.BuildingAdapter;
 import com.example.lab4_fragments.R;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,28 +60,17 @@ public class EdificacionesFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        loadBuildingsFromAsset(); // Cargar datos desde el archivo
 
-        buildingList = new ArrayList<>();
-        buildingList.add(new Building("Catedral", "Santuario principal de la ciudad ocupando el lado norte de la Plaza de Armas", R.drawable.catedral));
-        buildingList.add(new Building("Mansión del Fundador", "La Mansión del Fundador es una histórica casona colonial de Arequipa, conocida por su arquitectura de sillar y su rica herencia cultural y artística.", R.drawable.ingreso));
-        buildingList.add(new Building("Monasterio de Santa Catalina", "Una pequeña ciudadela que ocupa un área de 20 mil metros cuadrados", R.drawable.monasterio));
-        buildingList.add(new Building("Molino de Sabandía", "Una construcción colonial donde se molían trigo y maíz", R.drawable.molino));
 
 
         buildingAdapter = new BuildingAdapter(buildingList ,  new BuildingAdapter.OnBuildingClickListener() {
             @Override
             public void onBuildingClick(int position) {
-                Log.d("EdificacionesFragmentINNER", "Edificación seleccionada en la posición: " + position);
-                Log.v("EdificacionesFragmentINNER", "SE LLAMO AL METODO DE ABAJO: " + position);
-
                 Building selectedBuilding = buildingList.get(position);
-
                 int buildingId = position;
-                Log.d("EdificacionesFragmentINNER", "SE COGIO EL ID  DE LA EDIFICACION " + position);
-
                 DetailFragment detailFragment = DetailFragment.newInstance(buildingId);
                 FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.fragmentContainerView, detailFragment);
                 fragmentTransaction.addToBackStack(null);
@@ -88,6 +81,31 @@ public class EdificacionesFragment extends Fragment {
 
         return view;
     }
+    private void loadBuildingsFromAsset() {
+        buildingList = new ArrayList<>();
+        try {
+            InputStream is = getContext().getAssets().open("edificaciones.txt");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split("\\|");
+                if (parts.length == 3) {
+                    String title = parts[0];
+                    String description = parts[1];
+                    int imageResId = getResourceId(parts[2]);
+                    buildingList.add(new Building(title, description, imageResId));
+                }
+            }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private int getResourceId(String resourceName) {
+        return getResources().getIdentifier(resourceName, "drawable", getContext().getPackageName());
+    }
+
 
 
 
