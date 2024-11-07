@@ -1,16 +1,16 @@
-Catedral|Santuario principal de la ciudad ocupando el lado norte de la Plaza de Armas|catedral
-Mansión del Fundador|La Mansión del Fundador es una histórica casona colonial de Arequipa, conocida por su arquitectura de sillar y su rica herencia cultural y artística.|ingreso
-Monasterio de Santa Catalina|Una pequeña ciudadela que ocupa un área de 20 mil metros cuadrados|monasterio
-Molino de Sabandía|Una construcción colonial donde se molían trigo y maíz|molino
-Casa del Moral|Una de las casas coloniales más antiguas de Arequipa, famosa por su arquitectura y mobiliario de época.|casa_moral
-Iglesia de La Compañía|Una iglesia barroca construida por la Compañía de Jesús en el siglo XVII, con una impresionante fachada tallada.|compania
-Claustros de la Compañía|Un conjunto arquitectónico colonial que forma parte del complejo de la iglesia de La Compañía.|claustros_compania
-Basílica Menor de La Merced|Iglesia colonial conocida por su arquitectura y su impactante altar mayor.|merced
-Casa Tristán del Pozo|Una casona colonial bien conservada, actualmente sede de una entidad bancaria.|casa_tristan
-Iglesia y Convento de Santo Domingo|Un hermoso templo colonial con un interior decorado en estilo barroco.|santo_domingo
-Museo de Arte Virreinal de Santa Teresa|Convento y museo que alberga una rica colección de arte virreinal.|museo_virreinal
-Museo Santuarios Andinos|Museo famoso por albergar a la Momia Juanita, una de las momias mejor conservadas del mundo.|santuarios_andinos
-Iglesia San Agustín|Iglesia barroca con una fachada de estilo rococó, ubicada en el centro histórico de Arequipa.|san_agustin
-Iglesia Santa Marta|Templo del siglo XVI, caracterizado por su estilo sencillo y su fachada de sillar.|santa_marta
-Casona del Solar|Construcción del siglo XVIII, un símbolo del esplendor colonial en Arequipa.|casona_solar
-Teatro Fénix|Antiguo teatro de Arequipa, conocido por ser uno de los primeros teatros del Perú.|teatro_fenix
+Catedral|Iglesia|Santuario principal de la ciudad ocupando el lado norte de la Plaza de Armas|catedral
+Mansión del Fundador|Casona|La Mansión del Fundador es una histórica casona colonial de Arequipa, conocida por su arquitectura de sillar y su rica herencia cultural y artística.|ingreso
+Monasterio de Santa Catalina|Monasterio|Una pequeña ciudadela que ocupa un área de 20 mil metros cuadrados|monasterio
+Molino de Sabandía|Molino|Una construcción colonial donde se molían trigo y maíz|molino
+Casa del Moral|Casona|Una de las casas coloniales más antiguas de Arequipa, famosa por su arquitectura y mobiliario de época.|casa_moral
+Iglesia de La Compañía|Iglesia|Una iglesia barroca construida por la Compañía de Jesús en el siglo XVII, con una impresionante fachada tallada.|compania
+Claustros de la Compañía|Claustro|Un conjunto arquitectónico colonial que forma parte del complejo de la iglesia de La Compañía.|claustros_compania
+Basílica Menor de La Merced|Iglesia|Iglesia colonial conocida por su arquitectura y su impactante altar mayor.|merced
+Casa Tristán del Pozo|Casona|Una casona colonial bien conservada, actualmente sede de una entidad bancaria.|casa_tristan
+Iglesia y Convento de Santo Domingo|Convento|Un hermoso templo colonial con un interior decorado en estilo barroco.|santo_domingo
+Museo de Arte Virreinal de Santa Teresa|Museo|Convento y museo que alberga una rica colección de arte virreinal.|museo_virreinal
+Museo Santuarios Andinos|Museo|Museo famoso por albergar a la Momia Juanita, una de las momias mejor conservadas del mundo.|santuarios_andinos
+Iglesia San Agustín|Iglesia|Iglesia barroca con una fachada de estilo rococó, ubicada en el centro histórico de Arequipa.|san_agustin
+Iglesia Santa Marta|Iglesia|Templo del siglo XVI, caracterizado por su estilo sencillo y su fachada de sillar.|santa_marta
+Casona del Solar|Casona|Construcción del siglo XVIII, un símbolo del esplendor colonial en Arequipa.|casona_solar
+Teatro Fénix|Teatro|Antiguo teatro de Arequipa, conocido por ser uno de los primeros teatros del Perú.|teatro_fenix

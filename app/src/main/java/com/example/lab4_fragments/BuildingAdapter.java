@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.util.List;
 
 public class BuildingAdapter extends RecyclerView.Adapter<BuildingAdapter.BuildingViewHolder> {
@@ -20,6 +19,7 @@ public class BuildingAdapter extends RecyclerView.Adapter<BuildingAdapter.Buildi
     public interface OnBuildingClickListener {
         void onBuildingClick(int position);
     }
+
     public BuildingAdapter(List<Building> buildingList, OnBuildingClickListener onBuildingClickListener) {
         this.buildingList = buildingList;
         this.onBuildingClickListener = onBuildingClickListener;
@@ -28,7 +28,8 @@ public class BuildingAdapter extends RecyclerView.Adapter<BuildingAdapter.Buildi
     @NonNull
     @Override
     public BuildingViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_building, parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_building, parent, false);
         return new BuildingViewHolder(view);
     }
 
@@ -36,13 +37,13 @@ public class BuildingAdapter extends RecyclerView.Adapter<BuildingAdapter.Buildi
     public void onBindViewHolder(@NonNull BuildingViewHolder holder, int position) {
         Building building = buildingList.get(position);
         holder.title.setText(building.getTitle());
+        holder.category.setText(building.getCategory()); // Establecer categoría
         holder.description.setText(building.getDescription());
         holder.image.setImageResource(building.getImageResId());
 
         // Manejar el clic en el elemento
         holder.itemView.setOnClickListener(v -> {
             if (onBuildingClickListener != null) {
-                Log.d("BuildingAdapter", "Edificación clickeada: " + building.getTitle());
                 onBuildingClickListener.onBuildingClick(position);
             }
         });
@@ -54,15 +55,15 @@ public class BuildingAdapter extends RecyclerView.Adapter<BuildingAdapter.Buildi
     }
 
     public static class BuildingViewHolder extends RecyclerView.ViewHolder {
-        TextView title, description;
+        TextView title, category, description; // Añadido category
         ImageView image;
 
         public BuildingViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.building_title);
+            category = itemView.findViewById(R.id.building_category); // Inicializar categoría
             description = itemView.findViewById(R.id.building_description);
             image = itemView.findViewById(R.id.building_image);
         }
     }
 }
-

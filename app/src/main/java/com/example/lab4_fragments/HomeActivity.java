@@ -49,7 +49,7 @@ public class HomeActivity extends AppCompatActivity {
                     return true;
                 }
                 else if(item.getItemId()==R.id.menu_edificaciones){
-                    edificacionesFragment = EdificacionesFragment.newInstance("","");
+                    edificacionesFragment = EdificacionesFragment.newInstance();
                     loadFragment(edificacionesFragment);
                     return true;
                 }
