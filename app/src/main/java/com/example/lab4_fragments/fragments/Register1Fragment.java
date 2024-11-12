@@ -52,3 +52,4 @@ public class Register1Fragment extends Fragment {
         getActivity().getSupportFragmentManager().popBackStack();
     }
 }
+

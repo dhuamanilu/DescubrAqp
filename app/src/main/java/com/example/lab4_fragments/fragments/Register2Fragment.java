@@ -13,7 +13,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.lab4_fragments.R;
 import com.example.lab4_fragments.view_models.SharedViewModel;
 import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
 
 public class Register2Fragment extends Fragment {
 
@@ -32,12 +31,13 @@ public class Register2Fragment extends Fragment {
         confirmPasswordEditText = rootView.findViewById(R.id.confirmPasswordEditText);
 
         rootView.findViewById(R.id.btnBack).setOnClickListener(v -> goBackToRegister1());
+
         rootView.findViewById(R.id.btnFinish).setOnClickListener(v -> {
             if (validatePasswords()) {
                 sharedViewModel.setEmail(emailEditText.getText().toString());
                 sharedViewModel.setPassword(passwordEditText.getText().toString());
 
-                saveData();
+                logData();
                 Toast.makeText(getActivity(), "Registro exitoso", Toast.LENGTH_SHORT).show();
                 goBackToStart();
             }
@@ -54,6 +54,26 @@ public class Register2Fragment extends Fragment {
         getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
     }
 
+    private void logData() {
+        try {
+            String data = sharedViewModel.getFirstName().getValue() + "," +
+                    sharedViewModel.getLastName().getValue() + "," +
+                    sharedViewModel.getDni().getValue() + "," +
+                    sharedViewModel.getPhone().getValue() + "," +
+                    sharedViewModel.getEmail().getValue() + ":" +
+                    sharedViewModel.getPassword().getValue() + "\n";
+
+            FileOutputStream fos = getActivity().openFileOutput("users.txt", getActivity().MODE_APPEND);
+            fos.write(data.getBytes());
+            fos.close();
+
+            Log.d("RegisterData", "Datos guardados en users.txt");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
     private boolean validatePasswords() {
         String password = passwordEditText.getText().toString();
         String confirmPassword = confirmPasswordEditText.getText().toString();
@@ -69,25 +89,7 @@ public class Register2Fragment extends Fragment {
         }
         return true;
     }
-
-    private void saveData() {
-        String firstName = sharedViewModel.getFirstName().getValue();
-        String lastName = sharedViewModel.getLastName().getValue();
-        String dni = sharedViewModel.getDni().getValue();
-        String phone = sharedViewModel.getPhone().getValue();
-        String email = sharedViewModel.getEmail().getValue();
-        String password = sharedViewModel.getPassword().getValue();
-
-        try (FileOutputStream fos = getActivity().openFileOutput("users.txt", getActivity().MODE_APPEND);
-             OutputStreamWriter writer = new OutputStreamWriter(fos)) {
-
-            writer.write(firstName + "," + lastName + "," + dni + "," + phone + "," + email + ":" + password + "\n");
-            writer.flush();
-            Log.d("RegisterData", "Usuario registrado: " + email);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }
+
 
 

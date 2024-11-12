@@ -3,6 +3,7 @@ package com.example.lab4_fragments.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +13,6 @@ import com.example.lab4_fragments.R;
 import com.example.lab4_fragments.HomeActivity;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import androidx.fragment.app.FragmentManager;
 
 public class LoginFragment extends Fragment {
 
@@ -48,10 +48,9 @@ public class LoginFragment extends Fragment {
     }
 
     private boolean validateCredentials(String email, String password) {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(getActivity().getAssets().open("users.txt")))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(getActivity().openFileInput("users.txt")))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                // Se espera que el formato sea: firstName,lastName,dni,phone,email:password
                 String[] parts = line.split(":");
                 if (parts.length == 2) {
                     String fileEmail = parts[0].split(",")[4];
@@ -72,5 +71,6 @@ public class LoginFragment extends Fragment {
         getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
     }
 }
+
 
 
