@@ -27,7 +27,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         Comment comment = commentList.get(position);
         holder.usernameTextView.setText(comment.getUsername());
         holder.textTextView.setText(comment.getText());
-
+        holder.ratingTextView.setText("" + comment.getRating());
     }
 
     @Override
@@ -38,11 +38,13 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
     public static class CommentViewHolder extends RecyclerView.ViewHolder {
         TextView usernameTextView;
         TextView textTextView;
+        TextView ratingTextView;
 
         public CommentViewHolder(@NonNull View itemView) {
             super(itemView);
             usernameTextView = itemView.findViewById(R.id.comment_username);
             textTextView = itemView.findViewById(R.id.comment_text);
+            ratingTextView = itemView.findViewById(R.id.comment_rating_text); // Inicializar el TextView de calificación
         }
     }
 }

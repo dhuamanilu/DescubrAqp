@@ -76,6 +76,7 @@ public class LoginFragment extends Fragment {
                     String filePassword = parts[1];
 
                     if (fileEmail.equals(email) && filePassword.equals(password)) {
+                        Toast.makeText(getActivity(), "Bienvenido, " + email, Toast.LENGTH_SHORT).show();
                         return true;
                     }
                 }

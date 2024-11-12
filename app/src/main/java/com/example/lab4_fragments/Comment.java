@@ -3,9 +3,9 @@ package com.example.lab4_fragments;
 public class Comment {
     private String username;
     private String text;
-    private int rating;
+    private float rating;
 
-    public Comment(String username, String text, int rating) {
+    public Comment(String username, String text, float rating) {
         this.username = username;
         this.text = text;
         this.rating = rating;
@@ -19,8 +19,7 @@ public class Comment {
         return text;
     }
 
-    public int getRating() {
+    public float getRating() {
         return rating;
     }
 }
-

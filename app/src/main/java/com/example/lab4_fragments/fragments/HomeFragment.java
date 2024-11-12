@@ -50,8 +50,6 @@ public class HomeFragment extends Fragment {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserPrefs", getActivity().MODE_PRIVATE);
         String loggedInUser = sharedPreferences.getString("loggedInUser", "Usuario");
 
-        Toast.makeText(getActivity(), "Bienvenido, " + loggedInUser, Toast.LENGTH_SHORT).show();
-
         viewUbiButton.setOnClickListener(v -> toggleImage());
 
         mapImage.setOnClickListener(v -> navigateToDetailFragment());

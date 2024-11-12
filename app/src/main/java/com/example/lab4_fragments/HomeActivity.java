@@ -3,7 +3,6 @@ package com.example.lab4_fragments;
 import android.os.Bundle;
 import android.view.MenuItem;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -22,46 +21,53 @@ import com.google.android.material.navigation.NavigationBarView;
 
 public class HomeActivity extends AppCompatActivity {
     private FragmentManager fragmentManager = null;
-    private FragmentTransaction fragmentTransaction = null;
     private HomeFragment homeFragment = null;
-    private EdificacionesFragment  edificacionesFragment = null;
-    private MapaFragment mapaFragment = null;
+    private EdificacionesFragment edificacionesFragment = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_home);
+
+        // Ajusta los insets de la ventana para que no haya espacio en la parte inferior
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0); // 0 en la parte inferior
+            return WindowInsetsCompat.CONSUMED;
         });
+
         fragmentManager = getSupportFragmentManager();
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setSelectedItemId(R.id.menu_home);
+
+        // Configuración de los fragmentos al seleccionar una opción del menú de navegación
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                if(item.getItemId()==R.id.menu_home){
-                    homeFragment = HomeFragment.newInstance("","");
+                if (item.getItemId() == R.id.menu_home) {
+                    homeFragment = HomeFragment.newInstance("", "");
                     loadFragment(homeFragment);
                     return true;
-                }
-                else if(item.getItemId()==R.id.menu_edificaciones){
+                } else if (item.getItemId() == R.id.menu_edificaciones) {
                     edificacionesFragment = EdificacionesFragment.newInstance();
                     loadFragment(edificacionesFragment);
                     return true;
+                } else {
+                    return false;
                 }
-                else return false;
             }
         });
-    }
-    private void loadFragment(Fragment fragment){
-        if(fragmentManager!=null){
-            fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.fragmentContainerView,fragment);
-            fragmentTransaction.commit();
+
+        // Cargar el fragmento inicial (Home)
+        if (savedInstanceState == null) {
+            homeFragment = HomeFragment.newInstance("", "");
+            loadFragment(homeFragment);
         }
+    }
+
+    private void loadFragment(Fragment fragment) {
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragmentContainerView, fragment);
+        fragmentTransaction.commit();
     }
 }

@@ -1,5 +1,6 @@
 package com.example.lab4_fragments.fragments;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -14,24 +15,34 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.example.lab4_fragments.Comment;
 import com.example.lab4_fragments.CommentAdapter;
 import com.example.lab4_fragments.R;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DetailFragment extends Fragment {
     private static final String ARG_BUILDING_ID = "building_id";
-    private int buildingId; // Identificador para el edificio seleccionado
+    private int buildingId;
     private RecyclerView commentsRecyclerView;
     private CommentAdapter commentAdapter;
     private List<Comment> commentList;
     private Button btnView360;
-
     private Button btnViewMansion;
+    private EditText commentInput;
+    private Button submitCommentButton;
+    private RatingBar ratingBar;
+
     public static DetailFragment newInstance(int buildingId) {
         DetailFragment fragment = new DetailFragment();
         Bundle args = new Bundle();
@@ -50,38 +61,37 @@ public class DetailFragment extends Fragment {
         TextView descriptionTextView = view.findViewById(R.id.description_text_view);
         btnView360 = view.findViewById(R.id.btn_view_360);
         btnViewMansion = view.findViewById(R.id.btn_view_mansion);
+        commentInput = view.findViewById(R.id.comment_input);
+        submitCommentButton = view.findViewById(R.id.submit_comment_button);
+        ratingBar = view.findViewById(R.id.rating_bar);
+
         commentsRecyclerView = view.findViewById(R.id.comments_recycler_view);
         commentsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         commentList = new ArrayList<>();
         commentAdapter = new CommentAdapter(commentList);
         commentsRecyclerView.setAdapter(commentAdapter);
 
-
         loadBuildingData(buildingId, imageView, titleTextView, descriptionTextView);
-        commentList.add(new Comment("Diego Almazán", "Más que un monasterio es una ciudad dentro de la propia ciudad", 5));
-        commentList.add(new Comment("Louis Toh", "Hay mucho que ver, aunque algunas cosas pueden resultar un poco repetitivas después de un tiempo.", 4));
-        btnView360.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Vista360Fragment vista360Fragment = new Vista360Fragment();
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragmentContainerView, vista360Fragment)
-                        .addToBackStack(null)
-                        .commit();
-            }
+        loadComments();
+
+        btnView360.setOnClickListener(v -> {
+            Vista360Fragment vista360Fragment = new Vista360Fragment();
+            requireActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragmentContainerView, vista360Fragment)
+                    .addToBackStack(null)
+                    .commit();
         });
 
-
-        btnViewMansion.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MansionFragment mansionFragment = new MansionFragment();
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragmentContainerView, mansionFragment)
-                        .addToBackStack(null)
-                        .commit();
-            }
+        btnViewMansion.setOnClickListener(v -> {
+            MansionFragment mansionFragment = new MansionFragment();
+            requireActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragmentContainerView, mansionFragment)
+                    .addToBackStack(null)
+                    .commit();
         });
+
+        submitCommentButton.setOnClickListener(v -> addComment());
+
         return view;
     }
 
@@ -99,15 +109,60 @@ public class DetailFragment extends Fragment {
             titleTextView.setText("Monasterio de Santa Catalina");
             descriptionTextView.setText("Este complejo turístico fue fundado en 1579.");
             imageView.setImageResource(R.drawable.monasterio);
-        }
-        else if (buildingId == 3) {
+        } else if (buildingId == 3) {
             titleTextView.setText("Molino de Sabandia");
             descriptionTextView.setText("Una construcción colonial donde se molían trigo y maíz.");
             imageView.setImageResource(R.drawable.molino);
         }
-
     }
 
+    private void loadComments() {
+        File file = new File(getContext().getFilesDir(), "comments_" + buildingId + ".txt");
+        if (file.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String[] parts = line.split("\\|");
+                    if (parts.length == 3) {
+                        String username = parts[0];
+                        String content = parts[1];
+                        float rating = Float.parseFloat(parts[2]);
+                        commentList.add(new Comment(username, content, rating));
+                    }
+                }
+                commentAdapter.notifyDataSetChanged();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void addComment() {
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", getActivity().MODE_PRIVATE);
+        String loggedInUser = sharedPreferences.getString("loggedInUser", "Usuario");
+
+        String commentText = commentInput.getText().toString().trim();
+        float rating = ratingBar.getRating();
+        if (!commentText.isEmpty()) {
+            Comment newComment = new Comment(loggedInUser, commentText, rating);
+            commentList.add(newComment);
+            commentAdapter.notifyDataSetChanged();
+
+            saveCommentToFile(loggedInUser, commentText, rating);
+            commentInput.setText("");
+            ratingBar.setRating(0);
+        }
+    }
+
+    private void saveCommentToFile(String username, String comment, float rating) {
+        File file = new File(getContext().getFilesDir(), "comments_" + buildingId + ".txt");
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
+            writer.write(username + "|" + comment + "|" + rating);
+            writer.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -116,6 +171,4 @@ public class DetailFragment extends Fragment {
             buildingId = getArguments().getInt(ARG_BUILDING_ID);
         }
     }
-
-
 }
