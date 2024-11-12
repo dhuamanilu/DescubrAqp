@@ -3,14 +3,16 @@ package com.example.lab4_fragments.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 import com.example.lab4_fragments.R;
-import com.example.lab4_fragments.HomeActivity; // Importa tu HomeActivity
+import com.example.lab4_fragments.HomeActivity;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import androidx.fragment.app.FragmentManager;
 
 public class LoginFragment extends Fragment {
 
@@ -36,7 +38,7 @@ public class LoginFragment extends Fragment {
         String email = emailEditText.getText().toString();
         String password = passwordEditText.getText().toString();
 
-        if ("admin".equals(email) && "admin".equals(password)) {
+        if (validateCredentials(email, password)) {
             Intent intent = new Intent(getActivity(), HomeActivity.class);
             startActivity(intent);
             getActivity().finish();
@@ -45,7 +47,30 @@ public class LoginFragment extends Fragment {
         }
     }
 
+    private boolean validateCredentials(String email, String password) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(getActivity().getAssets().open("users.txt")))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                // Se espera que el formato sea: firstName,lastName,dni,phone,email:password
+                String[] parts = line.split(":");
+                if (parts.length == 2) {
+                    String fileEmail = parts[0].split(",")[4];
+                    String filePassword = parts[1];
+
+                    if (fileEmail.equals(email) && filePassword.equals(password)) {
+                        return true;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     private void goBackToStart() {
         getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
     }
 }
+
+

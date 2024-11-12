@@ -12,6 +12,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import com.example.lab4_fragments.R;
 import com.example.lab4_fragments.view_models.SharedViewModel;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 
 public class Register2Fragment extends Fragment {
 
@@ -30,13 +32,12 @@ public class Register2Fragment extends Fragment {
         confirmPasswordEditText = rootView.findViewById(R.id.confirmPasswordEditText);
 
         rootView.findViewById(R.id.btnBack).setOnClickListener(v -> goBackToRegister1());
-
         rootView.findViewById(R.id.btnFinish).setOnClickListener(v -> {
             if (validatePasswords()) {
                 sharedViewModel.setEmail(emailEditText.getText().toString());
                 sharedViewModel.setPassword(passwordEditText.getText().toString());
 
-                logData();
+                saveData();
                 Toast.makeText(getActivity(), "Registro exitoso", Toast.LENGTH_SHORT).show();
                 goBackToStart();
             }
@@ -51,15 +52,6 @@ public class Register2Fragment extends Fragment {
 
     private void goBackToStart() {
         getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-    }
-
-    private void logData() {
-        Log.d("RegisterData", "First Name: " + sharedViewModel.getFirstName().getValue());
-        Log.d("RegisterData", "Last Name: " + sharedViewModel.getLastName().getValue());
-        Log.d("RegisterData", "DNI: " + sharedViewModel.getDni().getValue());
-        Log.d("RegisterData", "Phone: " + sharedViewModel.getPhone().getValue());
-        Log.d("RegisterData", "Email: " + sharedViewModel.getEmail().getValue());
-        Log.d("RegisterData", "Password: " + sharedViewModel.getPassword().getValue());
     }
 
     private boolean validatePasswords() {
@@ -77,4 +69,25 @@ public class Register2Fragment extends Fragment {
         }
         return true;
     }
+
+    private void saveData() {
+        String firstName = sharedViewModel.getFirstName().getValue();
+        String lastName = sharedViewModel.getLastName().getValue();
+        String dni = sharedViewModel.getDni().getValue();
+        String phone = sharedViewModel.getPhone().getValue();
+        String email = sharedViewModel.getEmail().getValue();
+        String password = sharedViewModel.getPassword().getValue();
+
+        try (FileOutputStream fos = getActivity().openFileOutput("users.txt", getActivity().MODE_APPEND);
+             OutputStreamWriter writer = new OutputStreamWriter(fos)) {
+
+            writer.write(firstName + "," + lastName + "," + dni + "," + phone + "," + email + ":" + password + "\n");
+            writer.flush();
+            Log.d("RegisterData", "Usuario registrado: " + email);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
+
+
