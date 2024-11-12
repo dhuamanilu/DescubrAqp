@@ -1,6 +1,7 @@
 package com.example.lab4_fragments.fragments;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -24,11 +25,24 @@ public class LoginFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_login, container, false);
 
+        checkIfLoggedIn();
+
         rootView.findViewById(R.id.btnLogin).setOnClickListener(v -> attemptLogin(rootView));
 
         rootView.findViewById(R.id.btnBack).setOnClickListener(v -> goBackToStart());
 
         return rootView;
+    }
+
+    private void checkIfLoggedIn() {
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserPrefs", getActivity().MODE_PRIVATE);
+        String loggedInUser = sharedPreferences.getString("loggedInUser", null);
+
+        if (loggedInUser != null) {
+            Intent intent = new Intent(getActivity(), HomeActivity.class);
+            startActivity(intent);
+            getActivity().finish();
+        }
     }
 
     private void attemptLogin(View rootView) {
@@ -39,6 +53,11 @@ public class LoginFragment extends Fragment {
         String password = passwordEditText.getText().toString();
 
         if (validateCredentials(email, password)) {
+            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserPrefs", getActivity().MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("loggedInUser", email);
+            editor.apply();
+
             Intent intent = new Intent(getActivity(), HomeActivity.class);
             startActivity(intent);
             getActivity().finish();
@@ -71,6 +90,7 @@ public class LoginFragment extends Fragment {
         getActivity().getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
     }
 }
+
 
 
 
