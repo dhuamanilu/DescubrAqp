@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,6 +24,7 @@ import android.widget.TextView;
 import com.example.lab4_fragments.Building;
 import com.example.lab4_fragments.BuildingAdapter;
 import com.example.lab4_fragments.R;
+import com.example.lab4_fragments.view_models.SharedViewModel;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -43,7 +45,7 @@ public class EdificacionesFragment extends Fragment {
     private EditText searchBar;
     private RadioGroup filterOptions;
     private TextView emptyView;
-
+    private SharedViewModel sharedViewModel;
     public static EdificacionesFragment newInstance() {
         return new EdificacionesFragment();
     }
@@ -53,7 +55,7 @@ public class EdificacionesFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-
+        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
         View view = inflater.inflate(R.layout.fragment_edificaciones, container, false);
 
         recyclerView = view.findViewById(R.id.recycler_view);
@@ -161,6 +163,8 @@ public class EdificacionesFragment extends Fragment {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        sharedViewModel.setBuildingList(buildingList);
     }
 
     private int getResourceId(String resourceName) {

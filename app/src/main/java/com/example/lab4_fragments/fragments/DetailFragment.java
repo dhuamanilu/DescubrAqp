@@ -6,6 +6,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,9 +20,11 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.example.lab4_fragments.Building;
 import com.example.lab4_fragments.Comment;
 import com.example.lab4_fragments.CommentAdapter;
 import com.example.lab4_fragments.R;
+import com.example.lab4_fragments.view_models.SharedViewModel;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -42,7 +46,7 @@ public class DetailFragment extends Fragment {
     private EditText commentInput;
     private Button submitCommentButton;
     private RatingBar ratingBar;
-
+    private SharedViewModel sharedViewModel;
     public static DetailFragment newInstance(int buildingId) {
         DetailFragment fragment = new DetailFragment();
         Bundle args = new Bundle();
@@ -54,6 +58,13 @@ public class DetailFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        if (getArguments() != null) {
+            buildingId = getArguments().getInt(ARG_BUILDING_ID);
+        }
+        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+
+
+
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
 
         ImageView imageView = view.findViewById(R.id.image_view);
@@ -67,11 +78,25 @@ public class DetailFragment extends Fragment {
 
         commentsRecyclerView = view.findViewById(R.id.comments_recycler_view);
         commentsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        // Observa la lista de edificios en el ViewModel
+        sharedViewModel.getBuildingList().observe(getViewLifecycleOwner(), new Observer<List<Building>>() {
+            @Override
+            public void onChanged(List<Building> buildingList) {
+                if (buildingList != null && buildingId < buildingList.size()) {
+                    Building building = buildingList.get(buildingId);
+                    titleTextView.setText(building.getTitle());
+                    descriptionTextView.setText(building.getDescription());
+                    imageView.setImageResource(building.getImageResId());
+                }
+            }
+        });
+
         commentList = new ArrayList<>();
         commentAdapter = new CommentAdapter(commentList);
         commentsRecyclerView.setAdapter(commentAdapter);
 
-        loadBuildingData(buildingId, imageView, titleTextView, descriptionTextView);
+
         loadComments();
 
         btnView360.setOnClickListener(v -> {
@@ -93,27 +118,6 @@ public class DetailFragment extends Fragment {
         submitCommentButton.setOnClickListener(v -> addComment());
 
         return view;
-    }
-
-    private void loadBuildingData(int buildingId, ImageView imageView, TextView titleTextView, TextView descriptionTextView) {
-        // Ejemplo de datos estáticos
-        if (buildingId == 0) {
-            titleTextView.setText("Catedral");
-            descriptionTextView.setText("Santuario principal de la ciudad ocupando el lado norte de la Plaza de Armas.");
-            imageView.setImageResource(R.drawable.catedral);
-        } else if (buildingId == 1) {
-            titleTextView.setText("Mansión del Fundador");
-            descriptionTextView.setText("La Mansión del Fundador es una histórica casona colonial de Arequipa, conocida por su arquitectura de sillar y su rica herencia cultural y artística.");
-            imageView.setImageResource(R.drawable.ingreso);
-        } else if (buildingId == 2) {
-            titleTextView.setText("Monasterio de Santa Catalina");
-            descriptionTextView.setText("Este complejo turístico fue fundado en 1579.");
-            imageView.setImageResource(R.drawable.monasterio);
-        } else if (buildingId == 3) {
-            titleTextView.setText("Molino de Sabandia");
-            descriptionTextView.setText("Una construcción colonial donde se molían trigo y maíz.");
-            imageView.setImageResource(R.drawable.molino);
-        }
     }
 
     private void loadComments() {
