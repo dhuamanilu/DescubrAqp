@@ -1,23 +1,23 @@
 # Cuartos (Rooms)
-Cuarto Cuarto1 10 190 280 270
-Cuarto Cuarto2 280 93 460 373
-Cuarto Cuarto3 460 96 741 373
-Cuarto Cuarto4 460 376 741 480
-Cuarto Cuarto5 741 198 900 369
-Cuarto Cuarto6 741 95 900 198
-Cuarto Cuarto7 900 95 1070 370
-Cuarto Cuarto8 800 23 900 96
-Cuarto Cuarto9 490 23 630 96
-Cuarto Cuarto10 630 23 800 96
-
+Cuarto Cuarto1 490 1260 570 990
+Cuarto Cuarto2 393 990 673 810
+Cuarto Cuarto3 396 810 673 529
+Cuarto Cuarto4 676 810 780 529
+Cuarto Cuarto5 498 529 669 370
+Cuarto Cuarto6 395 529 498 370
+Cuarto Cuarto7 395 370 670 200
+Cuarto Cuarto8 323 470 396 370
+Cuarto Cuarto9 323 780 396 640
+Cuarto Cuarto10 323 640 396 470
 
 # Puertas (Doors)
-Puerta 280 260 280 212
-Puerta 460 259 460 198
-Puerta 531 373 600 373
-Puerta 741 213 741 300
-Puerta 900 218 900 315
-Puerta 783 198 837 198
-Puerta 846 96 811 96
-Puerta 759 96 688 96
-Puerta 601 96 542 96
+Puerta 560 990 512 990
+Puerta 559 810 498 810
+Puerta 673 739 673 670
+Puerta 513 529 600 529
+Puerta 518 370 615 370
+Puerta 498 487 498 433
+Puerta 396 424 396 459
+Puerta 396 511 396 582
+Puerta 396 669 396 728
+

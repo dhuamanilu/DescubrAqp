@@ -12,10 +12,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.lab4_fragments.fragments.DetailFragment;
 import com.example.lab4_fragments.fragments.EdificacionesFragment;
 import com.example.lab4_fragments.fragments.HomeFragment;
-import com.example.lab4_fragments.fragments.MapaFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
