@@ -6,8 +6,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -19,12 +17,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.lab4_fragments.Building;
+import com.example.lab4_fragments.BuildingRepository;
 import com.example.lab4_fragments.Comment;
 import com.example.lab4_fragments.CommentAdapter;
 import com.example.lab4_fragments.R;
-import com.example.lab4_fragments.view_models.SharedViewModel;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -46,7 +45,9 @@ public class DetailFragment extends Fragment {
     private EditText commentInput;
     private Button submitCommentButton;
     private RatingBar ratingBar;
-    private SharedViewModel sharedViewModel;
+    private BuildingRepository buildingRepository;
+    private Building building;
+
     public static DetailFragment newInstance(int buildingId) {
         DetailFragment fragment = new DetailFragment();
         Bundle args = new Bundle();
@@ -57,13 +58,11 @@ public class DetailFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         if (getArguments() != null) {
             buildingId = getArguments().getInt(ARG_BUILDING_ID);
         }
-        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
-
-
 
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
 
@@ -79,23 +78,26 @@ public class DetailFragment extends Fragment {
         commentsRecyclerView = view.findViewById(R.id.comments_recycler_view);
         commentsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Observa la lista de edificios en el ViewModel
-        sharedViewModel.getBuildingList().observe(getViewLifecycleOwner(), new Observer<List<Building>>() {
-            @Override
-            public void onChanged(List<Building> buildingList) {
-                if (buildingList != null && buildingId < buildingList.size()) {
-                    Building building = buildingList.get(buildingId);
-                    titleTextView.setText(building.getTitle());
-                    descriptionTextView.setText(building.getDescription());
-                    imageView.setImageResource(building.getImageResId());
-                }
-            }
-        });
-
         commentList = new ArrayList<>();
         commentAdapter = new CommentAdapter(commentList);
         commentsRecyclerView.setAdapter(commentAdapter);
 
+        // Inicializar BuildingRepository y cargar la edificación específica
+        buildingRepository = new BuildingRepository(getContext());
+        List<Building> buildingList = buildingRepository.getBuildingList();
+
+        if (buildingId >= 0 && buildingId < buildingList.size()) {
+            building = buildingList.get(buildingId);
+            titleTextView.setText(building.getTitle());
+            descriptionTextView.setText(building.getDescription());
+            imageView.setImageResource(building.getImageResId());
+        } else {
+            // Manejar el caso donde buildingId no es válido
+            titleTextView.setText("Edificación no encontrada");
+            descriptionTextView.setText("");
+            imageView.setImageResource(R.drawable.mapimage); // Reemplaza con una imagen placeholder
+            Toast.makeText(getContext(), "Edificación no encontrada", Toast.LENGTH_SHORT).show();
+        }
 
         loadComments();
 
@@ -142,7 +144,7 @@ public class DetailFragment extends Fragment {
     }
 
     private void addComment() {
-        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", getActivity().MODE_PRIVATE);
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", requireActivity().MODE_PRIVATE);
         String loggedInUser = sharedPreferences.getString("loggedInUser", "Usuario");
 
         String commentText = commentInput.getText().toString().trim();
@@ -155,6 +157,8 @@ public class DetailFragment extends Fragment {
             saveCommentToFile(loggedInUser, commentText, rating);
             commentInput.setText("");
             ratingBar.setRating(0);
+        } else {
+            Toast.makeText(getContext(), "Por favor, ingresa un comentario.", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -171,8 +175,6 @@ public class DetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            buildingId = getArguments().getInt(ARG_BUILDING_ID);
-        }
+        // Ya no es necesario manejar argumentos aquí, ya que se manejan en onCreateView
     }
 }

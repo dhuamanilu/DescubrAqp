@@ -7,7 +7,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,13 +22,10 @@ import android.widget.TextView;
 
 import com.example.lab4_fragments.Building;
 import com.example.lab4_fragments.BuildingAdapter;
+import com.example.lab4_fragments.BuildingRepository;
+import com.example.lab4_fragments.fragments.DetailFragment;
 import com.example.lab4_fragments.R;
-import com.example.lab4_fragments.view_models.SharedViewModel;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +41,8 @@ public class EdificacionesFragment extends Fragment {
     private EditText searchBar;
     private RadioGroup filterOptions;
     private TextView emptyView;
-    private SharedViewModel sharedViewModel;
+    private BuildingRepository buildingRepository;
+
     public static EdificacionesFragment newInstance() {
         return new EdificacionesFragment();
     }
@@ -55,7 +52,6 @@ public class EdificacionesFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
         View view = inflater.inflate(R.layout.fragment_edificaciones, container, false);
 
         recyclerView = view.findViewById(R.id.recycler_view);
@@ -65,10 +61,15 @@ public class EdificacionesFragment extends Fragment {
         filterOptions = view.findViewById(R.id.filter_options);
         emptyView = view.findViewById(R.id.empty_view);
 
-        loadBuildingsFromAsset(); // Cargar datos desde el archivo
+        buildingList = new ArrayList<>();
+        filteredBuildingList = new ArrayList<>();
 
-        filteredBuildingList = new ArrayList<>(buildingList); // Inicialmente, la lista filtrada es igual a la original
+        // Inicializar BuildingRepository y cargar la lista de edificaciones
+        buildingRepository = new BuildingRepository(getContext());
+        buildingList = buildingRepository.getBuildingList();
+        filteredBuildingList.addAll(buildingList);
 
+        // Inicializar el adaptador con la lista filtrada
         buildingAdapter = new BuildingAdapter(filteredBuildingList, position -> {
             // Manejar el clic en el elemento
             Building selectedBuilding = filteredBuildingList.get(position);
@@ -106,6 +107,9 @@ public class EdificacionesFragment extends Fragment {
             filter(searchBar.getText().toString());
         });
 
+        // Verificar si la lista está vacía al inicio
+        updateEmptyView();
+
         return view;
     }
 
@@ -133,7 +137,11 @@ public class EdificacionesFragment extends Fragment {
 
         buildingAdapter.notifyDataSetChanged();
 
-        // Mostrar u ocultar el mensaje cuando no hay resultados
+        // Actualizar la vista vacía
+        updateEmptyView();
+    }
+
+    private void updateEmptyView() {
         if (filteredBuildingList.isEmpty()) {
             recyclerView.setVisibility(View.GONE);
             emptyView.setVisibility(View.VISIBLE);
@@ -141,34 +149,5 @@ public class EdificacionesFragment extends Fragment {
             recyclerView.setVisibility(View.VISIBLE);
             emptyView.setVisibility(View.GONE);
         }
-    }
-
-    private void loadBuildingsFromAsset() {
-        buildingList = new ArrayList<>();
-        try {
-            InputStream is = getContext().getAssets().open("edificaciones.txt");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split("\\|");
-                if (parts.length == 4) { // Ahora esperamos 4 partes
-                    String title = parts[0];
-                    String category = parts[1]; // Leer categoría
-                    String description = parts[2];
-                    int imageResId = getResourceId(parts[3]);
-                    buildingList.add(new Building(title, category, description, imageResId));
-                }
-            }
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        sharedViewModel.setBuildingList(buildingList);
-    }
-
-    private int getResourceId(String resourceName) {
-        return getResources()
-                .getIdentifier(resourceName, "drawable", getContext().getPackageName());
     }
 }

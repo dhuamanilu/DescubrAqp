@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.lab4_fragments.fragments.DetailFragment;
 import com.example.lab4_fragments.fragments.EdificacionesFragment;
 import com.example.lab4_fragments.fragments.HomeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -27,9 +28,11 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
         // Configurar la Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         // Ajusta los insets de la ventana para que no haya espacio en la parte inferior
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -46,11 +49,15 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 if (item.getItemId() == R.id.menu_home) {
-                    homeFragment = HomeFragment.newInstance("", "");
+                    if (homeFragment == null) {
+                        homeFragment = HomeFragment.newInstance("", "");
+                    }
                     loadFragment(homeFragment);
                     return true;
                 } else if (item.getItemId() == R.id.menu_edificaciones) {
-                    edificacionesFragment = EdificacionesFragment.newInstance();
+                    if (edificacionesFragment == null) {
+                        edificacionesFragment = EdificacionesFragment.newInstance();
+                    }
                     loadFragment(edificacionesFragment);
                     return true;
                 } else {

@@ -2,15 +2,19 @@ package com.example.lab4_fragments;
 
 public class Building {
     private String title;
-    private String category; // Nuevo campo
+    private String category;
     private String description;
     private int imageResId;
+    private double latitude;
+    private double longitude;
 
-    public Building(String title, String category, String description, int imageResId) {
+    public Building(String title, String category, String description, int imageResId, double latitude, double longitude) {
         this.title = title;
-        this.category = category; // Inicializar nuevo campo
+        this.category = category;
         this.description = description;
         this.imageResId = imageResId;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public String getTitle() {
@@ -18,7 +22,7 @@ public class Building {
     }
 
     public String getCategory() {
-        return category; // Getter para categoría
+        return category;
     }
 
     public String getDescription() {
@@ -27,5 +31,13 @@ public class Building {
 
     public int getImageResId() {
         return imageResId;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
     }
 }
