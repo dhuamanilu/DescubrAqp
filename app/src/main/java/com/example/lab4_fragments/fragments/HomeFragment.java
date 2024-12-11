@@ -1,13 +1,19 @@
 package com.example.lab4_fragments.fragments;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,15 +21,23 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.example.lab4_fragments.HomeActivity;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+
 import com.example.lab4_fragments.Building;
 import com.example.lab4_fragments.BuildingRepository;
-import com.example.lab4_fragments.fragments.DetailFragment;
 import com.example.lab4_fragments.LoginActivity;
 import com.example.lab4_fragments.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -42,44 +56,42 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-/**
- * Fragmento que muestra el mapa con marcadores de edificaciones.
- */
 public class HomeFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+
+    private static final float PROXIMITY_THRESHOLD_METERS = 50.0f;
+    private static final String TAG = "HomeFragment";
+    private static final int NOTIFICATION_ID_BASE = 1000;
+    private static final String CHANNEL_ID = "proximity_channel";
+    private static final String CHANNEL_NAME = "Notificaciones de Proximidad";
+    private static final String CHANNEL_DESC = "Recibe notificaciones cuando te acerques a una edificación específica.";
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    private static final String KEY_CAMERA_POSITION = "camera_position";
+    private static final String KEY_ZOOM_LEVEL = "zoom_level";
+    private static final float ZOOM_THRESHOLD = 17.0f;
+
+    private ActivityResultLauncher<String> requestPermissionLauncher;
+    private LocationCallback locationCallback;
+    private LocationRequest locationRequest;
+    private Set<Integer> notifiedBuildings = new HashSet<>();
 
     private GoogleMap mMap;
     private Button viewUbiButton;
     private Button logoutButton;
     private BuildingRepository buildingRepository;
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
-    // Declaración de constantes para guardar el estado del mapa
-    private static final String KEY_CAMERA_POSITION = "camera_position";
-    private static final String KEY_ZOOM_LEVEL = "zoom_level";
-
-    // Declaración de la constante de umbral de zoom
-    private static final float ZOOM_THRESHOLD = 17.0f; // Define el umbral de zoom
-
-    // Variables para almacenar la última posición y nivel de zoom del mapa
     private LatLng lastCameraPosition = null;
-    private float lastZoom = 12.0f; // Nivel de zoom predeterminado
-
-    // Lista para almacenar todos los marcadores
+    private float lastZoom = 12.0f;
     private List<Marker> allMarkers = new ArrayList<>();
-
-    // Caché para los Bitmaps personalizados
     private Map<Integer, Bitmap> markerWithLabelCache = new HashMap<>();
     private Map<Integer, Bitmap> markerWithoutLabelCache = new HashMap<>();
-
-    // FusedLocationProviderClient para obtener la ubicación actual
     private FusedLocationProviderClient fusedLocationClient;
 
-    /**
-     * Método para crear una nueva instancia de HomeFragment.
-     */
+
     public static HomeFragment newInstance(String param1, String param2) {
         HomeFragment fragment = new HomeFragment();
         Bundle args = new Bundle();
@@ -89,75 +101,195 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
         return fragment;
     }
 
-    /**
-     * Constructor vacío requerido.
-     */
-    public HomeFragment() {
-        // Constructor vacío
-    }
+    public HomeFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState){
+                             Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
-    /**
-     * Configura la vista y los componentes del fragmento.
-     */
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState){
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Inicializar botones
         viewUbiButton = view.findViewById(R.id.viewUbi);
         logoutButton = view.findViewById(R.id.logoutButton);
 
-        // Inicializar el repositorio de edificios
         buildingRepository = new BuildingRepository(getContext());
-
-        // Inicializar FusedLocationProviderClient
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
 
-        // Configurar el botón "Ver mi ubicación"
         viewUbiButton.setOnClickListener(v -> {
             if (mMap != null) {
                 centerMapOnCurrentLocation();
             }
         });
 
-        // Configurar el botón "Salir"
         logoutButton.setOnClickListener(v -> logout());
 
-        // Configurar el mapa
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.mapFragment);
-        if (mapFragment != null){
+        if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
 
-        // Solicitar permisos de ubicación si no están concedidos
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(requireActivity(),
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     LOCATION_PERMISSION_REQUEST_CODE);
         } else {
-            if (mMap != null){
+            if (mMap != null) {
                 mMap.setMyLocationEnabled(true);
             }
         }
 
-        // Restaurar la posición y el zoom si hay datos guardados
+        requestPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                isGranted -> {
+                    if (isGranted) {
+                        Log.d(TAG, "Permiso de notificación concedido");
+                    } else {
+                        Log.e(TAG, "Permiso de notificación denegado");
+                    }
+                }
+        );
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+            }
+        }
+
         if (savedInstanceState != null) {
             lastCameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
             lastZoom = savedInstanceState.getFloat(KEY_ZOOM_LEVEL, 12.0f);
         }
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+
+        locationRequest = LocationRequest.create();
+        locationRequest.setInterval(10000);
+        locationRequest.setFastestInterval(5000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    handleNewLocation(location);
+                }
+            }
+        };
+
+        if (savedInstanceState != null) {
+            ArrayList<Integer> notified = savedInstanceState.getIntegerArrayList("notifiedBuildings");
+            if (notified != null) {
+                notifiedBuildings.addAll(notified);
+            }
+        }
+
+        createNotificationChannel();
+        startLocationUpdates();
     }
 
-    /**
-     * Centra el mapa en la ubicación actual del usuario.
-     */
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    CHANNEL_ID,
+                    CHANNEL_NAME,
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+            channel.setDescription(CHANNEL_DESC);
+
+            NotificationManager notificationManager = requireContext().getSystemService(NotificationManager.class);
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(channel);
+                Log.d(TAG, "Canal de notificación creado");
+            } else {
+                Log.e(TAG, "No se pudo obtener NotificationManager");
+            }
+        }
+    }
+
+
+    private void handleNewLocation(Location userLocation) {
+        List<Building> buildingList = buildingRepository.getBuildingList();
+        for (int i = 0; i < buildingList.size(); i++) {
+            Building building = buildingList.get(i);
+            float[] results = new float[1];
+            Location.distanceBetween(
+                    userLocation.getLatitude(),
+                    userLocation.getLongitude(),
+                    building.getLatitude(),
+                    building.getLongitude(),
+                    results
+            );
+            float distanceInMeters = results[0];
+
+            if (distanceInMeters <= PROXIMITY_THRESHOLD_METERS && !notifiedBuildings.contains(i)) {
+                String logMessage = "El usuario se ha acercado a la edificación: " + building.getTitle() + " (" + distanceInMeters + " metros)";
+                Log.d(TAG, logMessage);
+                notifiedBuildings.add(i);
+
+                sendProximityNotification(i, building, distanceInMeters);
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private void sendProximityNotification(int buildingId, Building building, float distance) {
+        if (!isAdded()) {
+            Log.w(TAG, "Fragment no está añadido. No se puede enviar la notificación.");
+            return;
+        }
+
+        Intent intent = new Intent(requireContext(), HomeActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.putExtra("buildingId", buildingId); // Añadir el ID de la edificación
+        PendingIntent pendingIntent = PendingIntent.getActivity(requireContext(), buildingId, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(requireContext(), CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_notification)
+                .setContentTitle("Te has acercado a una edificación")
+                .setContentText(building.getTitle() + " está a " + String.format("%.2f", distance) + " metros de ti.")
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(requireContext());
+        int notificationId = NOTIFICATION_ID_BASE + buildingId;
+        notificationManager.notify(notificationId, builder.build());
+        Log.d(TAG, "Notificación enviada para la edificación: " + building.getTitle());
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        startLocationUpdates();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        stopLocationUpdates();
+    }
+
+    private void startLocationUpdates() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
+        }
+    }
+
+    private void stopLocationUpdates() {
+        fusedLocationClient.removeLocationUpdates(locationCallback);
+    }
+
     private void centerMapOnCurrentLocation() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -165,40 +297,30 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
                     .addOnSuccessListener(requireActivity(), new OnSuccessListener<Location>() {
                         @Override
                         public void onSuccess(Location location) {
-                            // Ubicación encontrada
                             if (location != null) {
                                 LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15));
                             } else {
-                                // Ubicación no disponible
                                 Toast.makeText(getContext(), "No se pudo obtener la ubicación actual.", Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
         } else {
-            // Permisos de ubicación no concedidos
             Toast.makeText(getContext(), "Permiso de ubicación denegado.", Toast.LENGTH_SHORT).show();
-            // Opcional: Solicitar permisos nuevamente o guiar al usuario a los ajustes
         }
     }
 
-    /**
-     * Configura el mapa una vez que está listo.
-     */
     @Override
-    public void onMapReady(@NonNull GoogleMap googleMap){
+    public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Configurar el listener de clic en marcadores
         mMap.setOnMarkerClickListener(this);
 
-        // Agregar marcadores personalizados para cada edificación
         List<Building> buildingList = buildingRepository.getBuildingList();
         for (int i = 0; i < buildingList.size(); i++) {
             Building building = buildingList.get(i);
             LatLng position = new LatLng(building.getLatitude(), building.getLongitude());
 
-            // Crear un marcador sin etiqueta inicialmente
             Bitmap customMarker = createCustomMarkerWithoutLabel(i);
 
             Marker marker = mMap.addMarker(new MarkerOptions()
@@ -212,7 +334,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
             }
         }
 
-        // Restaurar la posición y el zoom si están disponibles
         if (lastCameraPosition != null) {
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lastCameraPosition, lastZoom));
         } else {
@@ -221,9 +342,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(arequipa, 12));
         }
 
-        // Habilitar la capa de ubicación si los permisos fueron concedidos
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED){
+                == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
         }
 
@@ -240,6 +360,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
 
     /**
      * Actualiza los íconos de los marcadores según el nivel de zoom.
+     *
      * @param zoomLevel Nivel de zoom actual del mapa.
      */
     private void updateMarkerIcons(float zoomLevel) {
@@ -260,6 +381,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
 
     /**
      * Crea un marcador personalizado sin etiqueta.
+     *
      * @param buildingId ID de la edificación.
      * @return Bitmap del marcador sin etiqueta.
      */
@@ -288,8 +410,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
 
     /**
      * Crea un marcador personalizado con etiqueta de texto.
+     *
      * @param buildingId ID de la edificación.
-     * @param title Nombre de la edificación.
+     * @param title      Nombre de la edificación.
      * @return Bitmap del marcador con etiqueta.
      */
     private Bitmap createCustomMarkerWithLabel(int buildingId, String title) {
@@ -321,14 +444,15 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
 
     /**
      * Maneja el clic en un marcador del mapa.
+     *
      * @param marker Marcador que fue clickeado.
      * @return True si el evento fue consumido, false de lo contrario.
      */
     @Override
-    public boolean onMarkerClick(@NonNull Marker marker){
+    public boolean onMarkerClick(@NonNull Marker marker) {
         // Obtener el índice de la edificación desde el tag del marcador
         Object tag = marker.getTag();
-        if (tag instanceof Integer){
+        if (tag instanceof Integer) {
             int buildingId = (Integer) tag;
             navigateToDetailFragment(buildingId);
             return true;
@@ -338,9 +462,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
 
     /**
      * Navega al DetailFragment correspondiente a la edificación seleccionada.
+     *
      * @param buildingId ID de la edificación.
      */
-    private void navigateToDetailFragment(int buildingId){
+    private void navigateToDetailFragment(int buildingId) {
         DetailFragment detailFragment = DetailFragment.newInstance(buildingId);
         requireActivity().getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragmentContainerView, detailFragment)
@@ -351,7 +476,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
     /**
      * Maneja el evento de clic en el botón "Salir".
      */
-    private void logout(){
+    private void logout() {
         // Eliminar el usuario logueado de SharedPreferences
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("UserPrefs", getActivity().MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -368,13 +493,13 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
      * Maneja la respuesta a la solicitud de permisos.
      */
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults){
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE){
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                        == PackageManager.PERMISSION_GRANTED){
-                    if (mMap != null){
+                        == PackageManager.PERMISSION_GRANTED) {
+                    if (mMap != null) {
                         mMap.setMyLocationEnabled(true);
                     }
                 }
@@ -391,10 +516,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
+        // Guardar los IDs de edificaciones ya notificadas
+        outState.putIntegerArrayList("notifiedBuildings", new ArrayList<>(notifiedBuildings));
+
         if (mMap != null) {
-            // Guardar la posición actual del mapa
             outState.putParcelable(KEY_CAMERA_POSITION, mMap.getCameraPosition().target);
-            // Guardar el nivel de zoom actual
             outState.putFloat(KEY_ZOOM_LEVEL, mMap.getCameraPosition().zoom);
         }
     }
