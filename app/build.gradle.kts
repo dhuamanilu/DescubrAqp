@@ -35,6 +35,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.room.runtime.v251)
+    annotationProcessor(libs.room.compiler.v251)
 
     implementation(libs.appcompat)
     implementation(libs.material)

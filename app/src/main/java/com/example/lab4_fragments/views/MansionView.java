@@ -61,24 +61,18 @@ public class MansionView extends View {
     }
 
     private void init() {
-        // Inicializar el Paint para los contornos de los cuartos
+
         paintRoomOutline = new Paint();
         paintRoomOutline.setColor(Color.DKGRAY);
         paintRoomOutline.setStyle(Paint.Style.STROKE);
         paintRoomOutline.setStrokeWidth(5);
-
-        // Inicializar el Paint para las puertas
         paintDoor = new Paint();
         paintDoor.setColor(Color.YELLOW);
         paintDoor.setStrokeWidth(10);
-
-        // Inicializar el Paint para el texto horizontal
         paintText = new Paint();
         paintText.setColor(Color.BLACK);
         paintText.setTextSize(30);
         paintText.setAntiAlias(true);
-
-        // Inicializar el Paint para el texto vertical
         paintTextVertical = new Paint();
         paintTextVertical.setColor(Color.BLACK);
         paintTextVertical.setTextSize(30);
